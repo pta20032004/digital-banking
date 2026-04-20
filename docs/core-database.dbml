@@ -1,0 +1,69 @@
+Enum user_status {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+Enum account_status {
+  ACTIVE
+  BLOCKED
+  CLOSED
+}
+
+Enum transaction_status {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+Enum transaction_type {
+  DEPOSIT
+  WITHDRAW
+  TRANSFER
+}
+
+Table users {
+  id long [primary key]
+  full_name varchar(500) [not null]
+  date_of_birth datetime
+  username varchar(30) [unique, not null]
+  email varchar(100) [unique]
+  password varchar(255) [note: "hash"]
+  phone_number varchar(20) [unique]
+  kyc_status user_status
+  created_at timestamp [default: `now()`] 
+  updated_at timestamp [default: `now()`] 
+  identity_number varchar(20)
+}
+
+Table accounts {
+  id long [primary key]
+  user_id long [not null] 
+  account_number varchar(15) [not null, unique]
+  balance decimal(19,4) [default: 0, not null] 
+  status account_status
+  version int 
+  currency varchar(10)
+  created_at timestamp [default: `now()`] 
+  updated_at timestamp [default: `now()`]
+}
+
+Table transactions {
+  id long [primary key]
+  reference_number varchar(100) [not null, unique]
+  from_account_id long 
+  to_account_id long 
+  amount decimal(19,4) [not null, note: 'amount > 0']
+  status transaction_status
+  transaction_type transaction_type
+  description varchar(100)
+  from_post_balance decimal(19,4)
+  to_post_balance decimal(19,4)
+  created_at timestamp [default: `now()`] 
+  updated_at timestamp [default: `now()`, note: "pending -> success"] 
+  fee decimal(19, 4)
+}
+
+Ref: accounts.user_id > users.id
+Ref: transactions.from_account_id > accounts.id
+Ref: transactions.to_account_id > accounts.id
