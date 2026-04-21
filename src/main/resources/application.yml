@@ -1,0 +1,60 @@
+server:
+  port: 8080
+
+spring:
+    application:
+        name: demo
+    profiles:
+        active: dev
+    datasource:
+        url: jdbc:postgresql://localhost:5434/${DB_NAME}?currentSchema=banking_schema
+        username: ${DB_USER:postgres}
+        password: ${DB_PASSWORD:123456}
+        driver-class-name: org.postgresql.Driver
+        hikari:
+            # Thời gian chờ tối đa để lấy một kết nối từ pool (ms)
+            connection-timeout: 30000
+            # Số lượng kết nối tối thiểu được duy trì trong pool
+            minimum-idle: 10
+            # Số lượng kết nối tối đa trong pool
+            maximum-pool-size: 20
+            # Thời gian tối đa một kết nối được phép rảnh rỗi (ms)
+            idle-timeout: 600000
+            # Thời gian sống tối đa của một kết nối (ms)
+            max-lifetime: 1800000
+            # Tên của pool (hữu ích khi giám sát/log)
+            pool-name: MyHikariCP
+    jpa:
+        # Hibernate không tự động tạo/sửa bảng (vì đã có Flyway lo)
+        hibernate:
+            ddl-auto: validate
+        
+        # Hiển thị log SQL ra console để bạn dễ debug
+        show-sql: true
+        properties:
+            hibernate:
+                # Định dạng SQL cho dễ đọc trên console
+                "[format_sql]": true
+                "[default_schema]": banking_schema
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                jdbc:
+                    "[batch_size]": 20 #Chỉ gom được các câu lệnh SQL giống hệt nhau về cấu trúc chữ, chỉ khác nhau giá trị truyền vào.
+                    "[order_inserts]": true 
+                    # Hiểu đơn giản: Nó tự động sắp xếp các lệnh INSERT theo cùng một bảng lại gần nhau trước khi chạy. 
+                    # Mục đích là để không làm lãng phí tính năng batch_size vừa nói ở trên.
+# Lý do:
+# JDBC chỉ có thể gom nhóm (batch) các câu lệnh giống hệt nhau về cấu trúc SQL, chỉ khác dữ liệu truyền vào. Nếu đang gom lệnh cho Bảng A, tự nhiên xen ngang một lệnh của Bảng B, JDBC sẽ lập tức chốt chuyến của Bảng A đem đi chạy luôn, rồi mở một chuyến mới cho Bảng B.
+                    "[order_updates]": true
+    flyway:
+        enabled: true
+        locations: classpath:db/migration
+        baseline-on-migrate: true
+        #base-line-version: 0
+
+logging:
+  level:
+    "[org.hibernate.SQL]": DEBUG
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": TRACE
+
+
+    
