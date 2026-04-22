@@ -7,7 +7,7 @@ spring:
     profiles:
         active: dev
     datasource:
-        url: jdbc:postgresql://localhost:5434/${DB_NAME}?currentSchema=banking_schema
+        url: jdbc:postgresql://localhost:5434/${DB_NAME}?currentSchema=${SCHEMA_NAME}
         username: ${DB_USER:postgres}
         password: ${DB_PASSWORD:123456}
         driver-class-name: org.postgresql.Driver
@@ -35,7 +35,7 @@ spring:
             hibernate:
                 # Định dạng SQL cho dễ đọc trên console
                 "[format_sql]": true
-                "[default_schema]": banking_schema
+                "[default_schema]": ${SCHEMA_NAME}
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 jdbc:
                     "[batch_size]": 20 #Chỉ gom được các câu lệnh SQL giống hệt nhau về cấu trúc chữ, chỉ khác nhau giá trị truyền vào.
