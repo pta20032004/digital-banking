@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+system:
+    user: 
+        name: ${SYSTEM_USER_1}
+        password: "${SYSTEM_USER_1_PASSWORD}"
 spring:
     application:
         name: demo
@@ -27,7 +31,7 @@ spring:
     jpa:
         # Hibernate không tự động tạo/sửa bảng (vì đã có Flyway lo)
         hibernate:
-            ddl-auto: validate
+            ddl-auto: none #validate
         
         # Hiển thị log SQL ra console để bạn dễ debug
         show-sql: true

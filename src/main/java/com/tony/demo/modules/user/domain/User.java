@@ -1,40 +1,73 @@
 package com.tony.demo.modules.user.domain;
 
 import java.time.LocalDate;
-import java.util.UUID;
+
+
+import com.tony.demo.core.model.BaseEntity;
+import com.tony.demo.modules.user.validation.ValidContactInfo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-// @Entity
+@Entity
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class User {
+@SuperBuilder
+@ValidContactInfo
+public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-
-    @Column(name = "full_name", nullable = false)
+    //Info of user
+    @Column(name = "full_name")
+    @Size(max = 255)
+    @NotBlank
     private String fullName;
 
-    @Column(name = "date_of_birth", nullable = false)
+    @Column(name = "date_of_birth")
+    @NotNull
     private LocalDate dateOfBirth;
 
-    @Column(name = "email", unique = true, length = 100)
+    @Column(name = "username", unique = true)
+    @NotBlank
+    @Size(max = 50)
+    private String username;
+
+    @Column(name = "email", unique = true)
+    @Size(max = 100)
+    @Email
     private String email;
+
+    @Column(name = "password") 
+    @Size(max = 255)
+    private String password;
+
+    @Column(name = "phone_number", unique = true)
+    @Size(max = 20)
+    private String phoneNumber;
+
+    @Column(name = "identity_number")
+    @NotNull
+    @Size(max = 50)
+    private String identityNumber;
+
+    @Column(name = "kyc_status")
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private UserStatus kycStatus = UserStatus.PENDING;
 }
