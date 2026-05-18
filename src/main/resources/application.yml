@@ -1,5 +1,8 @@
 server:
   port: 8080
+  servlet:
+    session:
+      timeout: 30m
 
 system:
     user: 
@@ -55,10 +58,60 @@ spring:
         baseline-on-migrate: true
         #base-line-version: 0
 
+    data:
+        redis:
+            host: ${REDIS_HOST:localhost}
+            port: ${REDIS_PORT:6379}
+            password: ${REDIS_PASSWORD:}
+
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        consumer:
+            group-id: ${KAFKA_CONSUMER_GROUP:banking-group}
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: ${GMAIL_USERNAME}
+        password: ${GMAIL_APP_PASSWORD}
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                        required: true
+
 logging:
   level:
     "[org.hibernate.SQL]": DEBUG
     "[org.hibernate.type.descriptor.sql.BasicBinder]": TRACE
+    "[org.apache.kafka.clients.consumer]": INFO
+    "[org.springframework.kafka]": INFO
 
+fake:
+  customer:
+    username: ${FAKE_CUSTOMER_USERNAME}
+    fullName: ${FAKE_CUSTOMER_FULL_NAME}
+    dob: ${FAKE_CUSTOMER_DOB}
+    email: ${FAKE_CUSTOMER_EMAIL}
+    password: ${FAKE_CUSTOMER_PASSWORD}
+    phone: ${FAKE_CUSTOMER_PHONE}
+    identity: ${FAKE_CUSTOMER_IDENTITY}
+    kycStatus: ${FAKE_CUSTOMER_KYC_STATUS}
 
-    
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${region}
+  s3:
+    bucket:
+      kyc: ${kyc}
+      audit: ${audit}
+      chat: ${chat}

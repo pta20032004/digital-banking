@@ -12,8 +12,13 @@ public enum ErrorCode {
     // LỖI USER (HTTP 400 / 404) 
     USER_NOT_FOUND("USR_001", "Không tìm thấy người dùng", HttpStatus.NOT_FOUND),
     USER_EXISTED("USR_002", "Người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
+    ROLE_NOT_FOUND("USR_003", "Không tìm thấy role", HttpStatus.INTERNAL_SERVER_ERROR),
+    
+    // LỖI XÁC THỰC (HTTP 401)
+    INVALID_CREDENTIALS("AUTH_001", "Tên đăng nhập hoặc mật khẩu không chính xác", HttpStatus.UNAUTHORIZED),
     
     // LỖI ACCOUNT & GIAO DỊCH (HTTP 400) 
+
     ACCOUNT_NOT_FOUND("ACC_001", "Tài khoản không tồn tại", HttpStatus.NOT_FOUND),
     INSUFFICIENT_BALANCE("ACC_002", "Số dư không đủ để thực hiện giao dịch", HttpStatus.BAD_REQUEST),
     ACCOUNT_BLOCKED("ACC_003", "Tài khoản đang bị khóa", HttpStatus.FORBIDDEN);

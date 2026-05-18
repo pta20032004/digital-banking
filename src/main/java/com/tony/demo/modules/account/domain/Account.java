@@ -12,6 +12,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,8 +56,9 @@ public class Account extends BaseEntity {
     @Builder.Default
     private String currency = "VND";
 
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "account_status")
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Builder.Default
     private AccountStatus status = AccountStatus.ACTIVE;
 

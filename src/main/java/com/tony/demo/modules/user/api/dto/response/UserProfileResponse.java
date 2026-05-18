@@ -8,6 +8,7 @@ public record UserProfileResponse(
         String fullName,
         String email,
         String phoneNumber,
-        String kycStatus
+        String kycStatus,
+        boolean hasTransactionPin
 ) {
 }

@@ -30,4 +30,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByPhoneNumber(String phoneNumber);
     
     boolean existsByIdentityNumber(String identityNumber);
+    
+    java.util.List<User> findAllByKycStatus(UserStatus kycStatus);
+    
+    long countByKycStatus(UserStatus kycStatus);
 }

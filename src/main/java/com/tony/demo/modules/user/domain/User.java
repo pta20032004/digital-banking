@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -65,9 +67,14 @@ public class User extends BaseEntity {
     @Size(max = 50)
     private String identityNumber;
 
-    @Column(name = "kyc_status")
+    @Column(name = "kyc_status", columnDefinition = "user_status")
     @NotNull
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Builder.Default
     private UserStatus kycStatus = UserStatus.PENDING;
+
+    @Column(name = "transaction_pin")
+    @Size(max = 255)
+    private String transactionPin;
 }
