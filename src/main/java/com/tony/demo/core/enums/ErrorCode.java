@@ -21,7 +21,13 @@ public enum ErrorCode {
 
     ACCOUNT_NOT_FOUND("ACC_001", "Tài khoản không tồn tại", HttpStatus.NOT_FOUND),
     INSUFFICIENT_BALANCE("ACC_002", "Số dư không đủ để thực hiện giao dịch", HttpStatus.BAD_REQUEST),
-    ACCOUNT_BLOCKED("ACC_003", "Tài khoản đang bị khóa", HttpStatus.FORBIDDEN);
+    ACCOUNT_BLOCKED("ACC_003", "Tài khoản đang bị khóa", HttpStatus.FORBIDDEN),
+
+    // LỖI GIAO DỊCH (HTTP 4xx / 429)
+    TOO_MANY_REQUESTS("TXN_001", "Quá nhiều yêu cầu, vui lòng thử lại sau", HttpStatus.TOO_MANY_REQUESTS),
+    DUPLICATE_TRANSACTION("TXN_002", "Giao dịch đang được xử lý hoặc đã bị trùng lặp", HttpStatus.CONFLICT),
+    INVALID_REQUEST("TXN_003", "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST),
+    INVALID_AMOUNT("TXN_004", "Số tiền giao dịch không hợp lệ", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

@@ -19,8 +19,11 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @GetMapping("/user/{userPublicId}")
-    public ResponseEntity<List<AccountDetailResponse>> getAccountsByUserPublicId(@PathVariable UUID userPublicId) {
-        return ResponseEntity.ok(accountService.getAccountsByUserPublicId(userPublicId));
+
+
+    @GetMapping("/me/balance")
+    public ResponseEntity<List<AccountDetailResponse>> getMyBalance() {
+        String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(accountService.getAccountsByUsername(username));
     }
 }

@@ -106,6 +106,24 @@ fake:
     identity: ${FAKE_CUSTOMER_IDENTITY}
     kycStatus: ${FAKE_CUSTOMER_KYC_STATUS}
 
+    manager:
+        employeeCode: ${FAKE_MANAGER_CODE}
+        fullName: ${FAKE_MANAGER_FULL_NAME}
+        email: ${FAKE_MANAGER_EMAIL}
+        password: ${FAKE_MANAGER_PASSWORD}
+        roleId: 1051 # ROLE_MANAGER
+        department: ${FAKE_MANAGER_DEPARTMENT}
+        branchCode: ${FAKE_MANAGER_BRANCH}
+
+    teller:
+        employeeCode: ${FAKE_TELLER_CODE}
+        fullName: ${FAKE_TELLER_FULL_NAME}
+        email: ${FAKE_TELLER_EMAIL}
+        password: ${FAKE_TELLER_PASSWORD}
+        roleId: 1101 # ROLE_TELLER
+        department: ${FAKE_TELLER_DEPARTMENT}
+        branchCode: ${FAKE_TELLER_BRANCH}
+
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}

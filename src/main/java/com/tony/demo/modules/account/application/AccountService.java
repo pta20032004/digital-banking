@@ -5,5 +5,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AccountService {
-    List<AccountDetailResponse> getAccountsByUserPublicId(UUID userPublicId);
+    List<AccountDetailResponse> getAccountsByUsername(String username);
 }

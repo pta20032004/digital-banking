@@ -17,8 +17,11 @@ import com.tony.demo.config.filter.CustomOtpAuthenticationFilter;
 
 import java.util.List;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -72,6 +75,23 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/public/**", "/api/v1/auth/**", "/login", "/verify-otp").permitAll()
             .anyRequest().authenticated()
+        );
+
+        // 11. Logout (Xử lý đăng xuất API)
+        http.logout(logout -> logout
+            .logoutUrl("/api/v1/auth/logout")
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .deleteCookies("JSESSIONID")
+            .logoutSuccessHandler((request, response, authentication) -> {
+                response.setStatus(200);
+                response.setContentType("application/json;charset=UTF-8");
+                try {
+                    response.getWriter().write("{\"message\": \"Đăng xuất thành công\"}");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            })
         );
 
         // 6 & 7. Custom Filters (Logic đăng nhập và OTP)

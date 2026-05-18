@@ -21,11 +21,13 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
+
+
     @Override
-    public List<AccountDetailResponse> getAccountsByUserPublicId(UUID userPublicId) {
-        User user = userRepository.findByPublicId(userPublicId)
+    public List<AccountDetailResponse> getAccountsByUsername(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-                
+
         List<Account> accounts = accountRepository.findByUserId(user.getId());
         return accounts.stream()
                 .map(account -> new AccountDetailResponse(
