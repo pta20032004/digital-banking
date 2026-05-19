@@ -40,7 +40,7 @@ public class AdminNotificationService {
     private final StaffRepository staffRepository;
     private final AuditLogRepository auditLogRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Transactional
     public void sendPrivateNotification(SendPrivateNotificationRequest request) {
@@ -68,8 +68,20 @@ public class AdminNotificationService {
 
         logAudit("SEND_PRIVATE_NOTIF", "notifications", String.valueOf(notification.getId()), null, request);
 
+        java.util.Map<String, Object> payload = new java.util.HashMap<>();
+        payload.put("publicId", notification.getPublicId());
+        payload.put("title", notification.getTitle());
+        payload.put("content", notification.getContent());
+        payload.put("type", notification.getType() != null ? notification.getType().name() : null);
+        payload.put("actionUrl", notification.getActionUrl());
+        payload.put("isBroadcast", false);
+        if (notification.getTemplate() != null) {
+            payload.put("templateCode", notification.getTemplate().getCode());
+            payload.put("params", notification.getParams());
+        }
+
         // Bắn sự kiện qua Kafka cho WebSocket hoặc FCM
-        kafkaTemplate.send("notification.private.send", user.getPublicId().toString(), notification);
+        kafkaTemplate.send("notification.private.send", user.getPublicId().toString(), payload);
     }
 
     @Transactional
@@ -95,8 +107,28 @@ public class AdminNotificationService {
 
         logAudit("SEND_BROADCAST_NOTIF", "broadcast_notifications", String.valueOf(notification.getId()), null, request);
 
+        java.util.Map<String, Object> payload = new java.util.HashMap<>();
+        payload.put("publicId", notification.getPublicId());
+        payload.put("title", notification.getTitle());
+        payload.put("content", notification.getContent());
+        payload.put("type", notification.getType() != null ? notification.getType().name() : null);
+        payload.put("actionUrl", notification.getActionUrl());
+        payload.put("isBroadcast", true);
+        if (notification.getTemplate() != null) {
+            payload.put("templateCode", notification.getTemplate().getCode());
+            payload.put("params", notification.getParams());
+        }
+
         // Bắn sự kiện qua Kafka để Push Realtime tới mọi user
-        kafkaTemplate.send("notification.broadcast.send", "ALL", notification);
+        kafkaTemplate.send("notification.broadcast.send", "ALL", payload);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<com.tony.demo.modules.notification.api.dto.NotificationTemplateDTO> getAllTemplates() {
+        return notificationTemplateRepository.findAll().stream()
+                .map(t -> new com.tony.demo.modules.notification.api.dto.NotificationTemplateDTO(
+                        t.getCode(), t.getTitleEn(), t.getTitleVi(), t.getContentEn(), t.getContentVi()))
+                .toList();
     }
 
     private void logAudit(String action, String targetEntity, String targetId, Object oldData, Object newData) {

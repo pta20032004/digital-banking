@@ -34,4 +34,9 @@ public class AdminNotificationController {
         adminNotificationService.sendBroadcastNotification(request);
         return ResponseEntity.ok().build();
     }
+    @org.springframework.web.bind.annotation.GetMapping("/templates")
+    @PreAuthorize("hasAuthority('NOTI_TEMPLATE_MANAGE')")
+    public ResponseEntity<java.util.List<com.tony.demo.modules.notification.api.dto.NotificationTemplateDTO>> getAllTemplates() {
+        return ResponseEntity.ok(adminNotificationService.getAllTemplates());
+    }
 }

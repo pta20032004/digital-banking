@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        return new AuthResponse(null, user.getUsername(), "User registered successfully");
+        return new AuthResponse(null, user.getUsername(), "User registered successfully", null);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
         redisTemplate.opsForValue().set("verifyEmail:" + token, user.getEmail(), java.time.Duration.ofHours(24));
         emailService.sendVerificationEmail(user.getEmail(), token);
 
-        return new AuthResponse(null, user.getUsername(), "Đăng ký thành công. Vui lòng kiểm tra email để xác thực.");
+        return new AuthResponse(null, user.getUsername(), "Đăng ký thành công. Vui lòng kiểm tra email để xác thực.", null);
     }
 
     @Override
@@ -173,12 +173,14 @@ public class AuthServiceImpl implements AuthService {
         }
 
         java.util.List<org.springframework.security.core.GrantedAuthority> authorities = new java.util.ArrayList<>();
-        authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_MANAGER"));
         
-        if (staff.getRole() != null && staff.getRole().getPermissions() != null) {
-            staff.getRole().getPermissions().forEach(p -> 
-                authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority(p.getCode()))
-            );
+        if (staff.getRole() != null) {
+            authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority(staff.getRole().getCode()));
+            if (staff.getRole().getPermissions() != null) {
+                staff.getRole().getPermissions().forEach(p -> 
+                    authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority(p.getCode()))
+                );
+            }
         }
 
         org.springframework.security.core.userdetails.UserDetails userDetails = 
@@ -197,7 +199,7 @@ public class AuthServiceImpl implements AuthService {
 
         String token = session.getId();
 
-        return new AuthResponse(token, staff.getEmployeeCode(), "Manager login successful");
+        return new AuthResponse(token, staff.getEmployeeCode(), "Manager login successful", staff.getRole() != null ? staff.getRole().getCode() : null);
     }
 
     @Override
@@ -232,7 +234,7 @@ public class AuthServiceImpl implements AuthService {
 
         redisTemplate.delete("tempToken:" + request.getTempToken());
 
-        return new AuthResponse(token, user.getUsername(), "Login successful");
+        return new AuthResponse(token, user.getUsername(), "Login successful", "ROLE_USER");
     }
 
     @Override
@@ -264,6 +266,6 @@ public class AuthServiceImpl implements AuthService {
         session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, org.springframework.security.core.context.SecurityContextHolder.getContext());
 
         String authToken = session.getId();
-        return new AuthResponse(authToken, user.getUsername(), "Xác thực email thành công.");
+        return new AuthResponse(authToken, user.getUsername(), "Xác thực email thành công.", "ROLE_USER");
     }
 }

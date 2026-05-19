@@ -52,6 +52,7 @@ public class Notification extends BaseEntity {
     private Map<String, Object> params;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "type", nullable = false)
     @Builder.Default
     private NotificationType type = NotificationType.SYSTEM;

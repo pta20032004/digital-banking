@@ -14,7 +14,8 @@ public enum ErrorCode {
     USER_EXISTED("USR_002", "Người dùng đã tồn tại", HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND("USR_003", "Không tìm thấy role", HttpStatus.INTERNAL_SERVER_ERROR),
     
-    // LỖI XÁC THỰC (HTTP 401)
+    // LỖI QUYỀN TRUY CẬP & XÁC THỰC (HTTP 401/403)
+    ACCESS_DENIED("AUTH_000", "Bạn không có quyền truy cập", HttpStatus.FORBIDDEN),
     INVALID_CREDENTIALS("AUTH_001", "Tên đăng nhập hoặc mật khẩu không chính xác", HttpStatus.UNAUTHORIZED),
     INVALID_PIN("AUTH_002", "Mã PIN không chính xác", HttpStatus.BAD_REQUEST),
     PIN_NOT_SET("AUTH_003", "Bạn chưa thiết lập mã PIN", HttpStatus.BAD_REQUEST),
@@ -29,7 +30,10 @@ public enum ErrorCode {
     TOO_MANY_REQUESTS("TXN_001", "Quá nhiều yêu cầu, vui lòng thử lại sau", HttpStatus.TOO_MANY_REQUESTS),
     DUPLICATE_TRANSACTION("TXN_002", "Giao dịch đang được xử lý hoặc đã bị trùng lặp", HttpStatus.CONFLICT),
     INVALID_REQUEST("TXN_003", "Yêu cầu không hợp lệ", HttpStatus.BAD_REQUEST),
-    INVALID_AMOUNT("TXN_004", "Số tiền giao dịch không hợp lệ", HttpStatus.BAD_REQUEST);
+    INVALID_AMOUNT("TXN_004", "Số tiền giao dịch không hợp lệ", HttpStatus.BAD_REQUEST),
+    
+    // LỖI NOTIFICATION
+    NOTIFICATION_NOT_FOUND("NOTIF_001", "Không tìm thấy thông báo", HttpStatus.NOT_FOUND);
 
     private final String code;
     private final String message;
