@@ -16,6 +16,8 @@ public enum ErrorCode {
     
     // LỖI XÁC THỰC (HTTP 401)
     INVALID_CREDENTIALS("AUTH_001", "Tên đăng nhập hoặc mật khẩu không chính xác", HttpStatus.UNAUTHORIZED),
+    INVALID_PIN("AUTH_002", "Mã PIN không chính xác", HttpStatus.BAD_REQUEST),
+    PIN_NOT_SET("AUTH_003", "Bạn chưa thiết lập mã PIN", HttpStatus.BAD_REQUEST),
     
     // LỖI ACCOUNT & GIAO DỊCH (HTTP 400) 
 

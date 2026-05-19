@@ -46,4 +46,11 @@ public class ManagerController {
     public ResponseEntity<Page<Transaction>> getAllTransactions(Pageable pageable) {
         return ResponseEntity.ok(managerService.getAllTransactions(pageable));
     }
+
+    // 5. Xem danh sách user đang chờ KYC
+    @GetMapping("/users/pending-kyc")
+    @PreAuthorize("hasAuthority('ROLE_MANAGER') or hasAuthority('KYC_APPROVE')")
+    public ResponseEntity<java.util.List<com.tony.demo.modules.manager.api.dto.PendingKycUserResponse>> getPendingKycUsers() {
+        return ResponseEntity.ok(managerService.getPendingKycUsers());
+    }
 }

@@ -13,12 +13,50 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.util.UUID;
 
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class S3Service {
 
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
+
+    public List<String> listFilesByPrefix(String bucketName, String prefix) {
+        ListObjectsV2Request listReq = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .build();
+        ListObjectsV2Response listRes = s3Client.listObjectsV2(listReq);
+        return listRes.contents().stream()
+                .map(S3Object::key)
+                .collect(Collectors.toList());
+    }
+
+    public String generatePresignedUrl(String bucketName, String key, Duration duration) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+                
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(duration)
+                .getObjectRequest(getObjectRequest)
+                .build();
+                
+        PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(getObjectPresignRequest);
+        return presignedGetObjectRequest.url().toString();
+    }
 
     public String uploadFile(String bucketName, String folder, MultipartFile file) throws IOException {
         String fileName = folder + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();

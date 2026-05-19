@@ -27,5 +27,8 @@ public class TransferRequest {
     @DecimalMin(value = "1.0", message = "Số tiền chuyển phải lớn hơn 0")
     private BigDecimal amount;
 
+    @NotBlank(message = "Mã PIN không được để trống")
+    private String pin;
+
     private String description;
 }

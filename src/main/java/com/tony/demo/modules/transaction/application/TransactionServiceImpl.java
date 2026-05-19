@@ -20,6 +20,7 @@ import com.tony.demo.modules.transaction.domain.Transaction;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Slf4j
 @Service
@@ -32,6 +33,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private static final String IDEMPOTENCY_PREFIX = "req_id:";
     private static final String RATE_LIMIT_PREFIX = "rate_limit:user:";
@@ -44,6 +46,18 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         Account receiver = accountRepository.findByAccountNumber(request.getReceiverAccountNumber())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        // 0.1. XÁC THỰC MÃ PIN
+        com.tony.demo.modules.user.domain.User senderUser = userRepository.findById(sender.getUserId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (senderUser.getTransactionPin() == null) {
+            throw new AppException(ErrorCode.PIN_NOT_SET);
+        }
+
+        if (!passwordEncoder.matches(request.getPin(), senderUser.getTransactionPin())) {
+            throw new AppException(ErrorCode.INVALID_PIN);
+        }
 
         Long senderInternalId = sender.getId();
         Long receiverInternalId = receiver.getId();

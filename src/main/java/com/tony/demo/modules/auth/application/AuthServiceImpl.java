@@ -32,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final com.tony.demo.modules.user.domain.UserKycDocumentRepository userKycDocumentRepository;
     private final com.tony.demo.service.S3Service s3Service;
     private final com.tony.demo.modules.notification.application.EmailService emailService;
+    private final com.tony.demo.modules.user.domain.StaffRepository staffRepository;
 
     @org.springframework.beans.factory.annotation.Value("${aws.s3.bucket.kyc}")
     private String kycBucketName;
@@ -60,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .phoneNumber(request.phoneNumber())
                 .identityNumber(request.identityNumber())
+                .transactionPin(passwordEncoder.encode(request.transactionPin()))
                 .kycStatus(UserStatus.PENDING)
                 .build();
 
@@ -92,6 +94,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .phoneNumber(request.phoneNumber())
                 .identityNumber(request.identityNumber())
+                .transactionPin(passwordEncoder.encode(request.transactionPin()))
                 .kycStatus(UserStatus.PENDING)
                 .build();
         userRepository.save(user);
@@ -159,6 +162,45 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public AuthResponse loginManager(LoginRequest request) {
+        log.info("Received manager login request - EmployeeCode: '{}'", request.username());
+        
+        com.tony.demo.modules.user.domain.Staff staff = staffRepository.findByEmployeeCode(request.username())
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+
+        if (!passwordEncoder.matches(request.password(), staff.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        java.util.List<org.springframework.security.core.GrantedAuthority> authorities = new java.util.ArrayList<>();
+        authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_MANAGER"));
+        
+        if (staff.getRole() != null && staff.getRole().getPermissions() != null) {
+            staff.getRole().getPermissions().forEach(p -> 
+                authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority(p.getCode()))
+            );
+        }
+
+        org.springframework.security.core.userdetails.UserDetails userDetails = 
+                org.springframework.security.core.userdetails.User.withUsername(staff.getEmployeeCode())
+                .password(staff.getPassword())
+                .authorities(authorities)
+                .build();
+
+        org.springframework.security.authentication.UsernamePasswordAuthenticationToken authentication = 
+            new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        jakarta.servlet.http.HttpServletRequest httpRequest = ((org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest();
+        jakarta.servlet.http.HttpSession session = httpRequest.getSession(true);
+        session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, org.springframework.security.core.context.SecurityContextHolder.getContext());
+
+        String token = session.getId();
+
+        return new AuthResponse(token, staff.getEmployeeCode(), "Manager login successful");
+    }
+
+    @Override
     public AuthResponse verifyOtp(com.tony.demo.modules.auth.dto.VerifyOtpRequest request) {
         String email = redisTemplate.opsForValue().get("tempToken:" + request.getTempToken());
         if (email == null) {
@@ -208,7 +250,20 @@ public class AuthServiceImpl implements AuthService {
         redisTemplate.delete("verifyEmail:" + token);
         log.info("Email {} has been verified successfully.", email);
         
-        String authToken = "dummy-token"; // Placeholder for actual JWT token
+        org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+
+        org.springframework.security.authentication.UsernamePasswordAuthenticationToken authentication = 
+            new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        jakarta.servlet.http.HttpServletRequest httpRequest = ((org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes()).getRequest();
+        jakarta.servlet.http.HttpSession session = httpRequest.getSession(true);
+        session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, org.springframework.security.core.context.SecurityContextHolder.getContext());
+
+        String authToken = session.getId();
         return new AuthResponse(authToken, user.getUsername(), "Xác thực email thành công.");
     }
 }

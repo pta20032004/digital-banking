@@ -44,13 +44,15 @@ public class Transaction extends BaseEntity {
     @Builder.Default
     private BigDecimal fee = BigDecimal.ZERO;
 
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "transaction_status")
     @Enumerated(EnumType.STRING)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     @Builder.Default
     private TransactionStatus status = TransactionStatus.PENDING;
 
-    @Column(name = "transaction_type")
+    @Column(name = "transaction_type", columnDefinition = "transaction_type")
     @Enumerated(EnumType.STRING)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     @NotNull
     private TransactionType transactionType;
 

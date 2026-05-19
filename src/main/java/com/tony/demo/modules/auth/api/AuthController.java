@@ -38,6 +38,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
+    @PostMapping("/manager-login")
+    public ResponseEntity<AuthResponse> loginManager(@RequestBody @Validated LoginRequest request) {
+        return ResponseEntity.ok(authService.loginManager(request));
+    }
+
 //    @PostMapping("/send-otp")
 //    public ResponseEntity<Map<String, String>> sendOtp(@RequestBody @Validated SendOtpRequest request) {
 //        otpService.sendOtp(request.getEmail());

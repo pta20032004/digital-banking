@@ -23,6 +23,27 @@ public class FakeStaffSeeder implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${fake.admin.employeeCode}")
+    private String adminEmployeeCode;
+
+    @Value("${fake.admin.fullName}")
+    private String adminFullName;
+
+    @Value("${fake.admin.email}")
+    private String adminEmail;
+
+    @Value("${fake.admin.password}")
+    private String adminPassword;
+
+    @Value("${fake.admin.roleId}")
+    private Long adminRoleId;
+
+    @Value("${fake.admin.department}")
+    private String adminDepartment;
+
+    @Value("${fake.admin.branchCode}")
+    private String adminBranchCode;
+
     @Value("${fake.manager.employeeCode}")
     private String managerEmployeeCode;
 
@@ -68,6 +89,7 @@ public class FakeStaffSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        insertStaff(adminEmployeeCode, adminFullName, adminEmail, adminPassword, adminRoleId, adminDepartment, adminBranchCode, "admin");
         insertStaff(managerEmployeeCode, managerFullName, managerEmail, managerPassword, managerRoleId, managerDepartment, managerBranchCode, "manager");
         insertStaff(tellerEmployeeCode, tellerFullName, tellerEmail, tellerPassword, tellerRoleId, tellerDepartment, tellerBranchCode, "teller");
     }

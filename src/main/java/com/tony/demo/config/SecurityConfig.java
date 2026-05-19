@@ -54,7 +54,7 @@ public class SecurityConfig {
         // 5. CsrfFilter (Chống lệnh lậu)
         http.csrf(csrf -> csrf
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .ignoringRequestMatchers("/api/v1/auth/**", "/login", "/verify-otp")
+            .ignoringRequestMatchers("/api/v1/**", "/login", "/verify-otp")
         );
 
         // 9. ExceptionTranslationFilter (Xử lý lỗi bảo mật)

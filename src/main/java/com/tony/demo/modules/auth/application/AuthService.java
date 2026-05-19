@@ -11,6 +11,7 @@ public interface AuthService {
     AuthResponse register(RegisterRequest request);
     AuthResponse registerFull(RegisterRequest request, org.springframework.web.multipart.MultipartFile frontImage, org.springframework.web.multipart.MultipartFile backImage);
     Map<String, Object> login(LoginRequest request);
+    AuthResponse loginManager(LoginRequest request);
     AuthResponse verifyOtp(VerifyOtpRequest request);
     AuthResponse verifyEmailToken(String token);
 }

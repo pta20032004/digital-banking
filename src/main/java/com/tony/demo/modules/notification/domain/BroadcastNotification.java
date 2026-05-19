@@ -2,12 +2,12 @@ package com.tony.demo.modules.notification.domain;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.tony.demo.core.model.BaseEntity;
-import com.tony.demo.modules.user.domain.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,17 +25,13 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "broadcast_notifications")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Notification extends BaseEntity {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+public class BroadcastNotification extends BaseEntity {
 
     @Column(name = "title", length = 255)
     private String title;
@@ -56,13 +52,12 @@ public class Notification extends BaseEntity {
     @Builder.Default
     private NotificationType type = NotificationType.SYSTEM;
 
-    @Column(name = "is_read", nullable = false)
-    @Builder.Default
-    private Boolean isRead = false;
-
-    @Column(name = "read_at")
-    private Instant readAt;
-
     @Column(name = "action_url", length = 255)
     private String actionUrl;
+
+    @Column(name = "start_time", nullable = false)
+    private Instant startTime;
+
+    @Column(name = "end_time")
+    private Instant endTime;
 }

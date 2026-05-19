@@ -13,5 +13,6 @@ public record RegisterRequest(
     @Email String email,
     @NotBlank String password,
     String phoneNumber,
-    @NotBlank String identityNumber
+    @NotBlank String identityNumber,
+    @NotBlank String transactionPin
 ) {}

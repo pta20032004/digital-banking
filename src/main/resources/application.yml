@@ -106,23 +106,32 @@ fake:
     identity: ${FAKE_CUSTOMER_IDENTITY}
     kycStatus: ${FAKE_CUSTOMER_KYC_STATUS}
 
-    manager:
-        employeeCode: ${FAKE_MANAGER_CODE}
-        fullName: ${FAKE_MANAGER_FULL_NAME}
-        email: ${FAKE_MANAGER_EMAIL}
-        password: ${FAKE_MANAGER_PASSWORD}
-        roleId: 1051 # ROLE_MANAGER
-        department: ${FAKE_MANAGER_DEPARTMENT}
-        branchCode: ${FAKE_MANAGER_BRANCH}
+  admin:
+    employeeCode: ${FAKE_ADMIN_CODE}
+    fullName: ${FAKE_ADMIN_FULL_NAME}
+    email: ${FAKE_ADMIN_EMAIL}
+    password: ${FAKE_ADMIN_PASSWORD}
+    roleId: 1001 # ROLE_ADMIN
+    department: ${FAKE_ADMIN_DEPARTMENT}
+    branchCode: ${FAKE_ADMIN_BRANCH}
 
-    teller:
-        employeeCode: ${FAKE_TELLER_CODE}
-        fullName: ${FAKE_TELLER_FULL_NAME}
-        email: ${FAKE_TELLER_EMAIL}
-        password: ${FAKE_TELLER_PASSWORD}
-        roleId: 1101 # ROLE_TELLER
-        department: ${FAKE_TELLER_DEPARTMENT}
-        branchCode: ${FAKE_TELLER_BRANCH}
+  manager:
+    employeeCode: ${FAKE_MANAGER_CODE}
+    fullName: ${FAKE_MANAGER_FULL_NAME}
+    email: ${FAKE_MANAGER_EMAIL}
+    password: ${FAKE_MANAGER_PASSWORD}
+    roleId: 1051 # ROLE_MANAGER
+    department: ${FAKE_MANAGER_DEPARTMENT}
+    branchCode: ${FAKE_MANAGER_BRANCH}
+
+  teller:
+    employeeCode: ${FAKE_TELLER_CODE}
+    fullName: ${FAKE_TELLER_FULL_NAME}
+    email: ${FAKE_TELLER_EMAIL}
+    password: ${FAKE_TELLER_PASSWORD}
+    roleId: 1101 # ROLE_TELLER
+    department: ${FAKE_TELLER_DEPARTMENT}
+    branchCode: ${FAKE_TELLER_BRANCH}
 
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
@@ -133,3 +142,18 @@ aws:
       kyc: ${kyc}
       audit: ${audit}
       chat: ${chat}
+
+notification:
+  templates:
+    deposit:
+      code: ${NOTI_TEMPLATE_DEPOSIT_CODE}
+      titleVi: ${NOTI_TEMPLATE_DEPOSIT_TITLE_VI}
+      titleEn: ${NOTI_TEMPLATE_DEPOSIT_TITLE_EN}
+      contentVi: ${NOTI_TEMPLATE_DEPOSIT_CONTENT_VI}
+      contentEn: ${NOTI_TEMPLATE_DEPOSIT_CONTENT_EN}
+    maintain:
+      code: ${NOTI_TEMPLATE_MAINTAIN_CODE}
+      titleVi: ${NOTI_TEMPLATE_MAINTAIN_TITLE_VI}
+      titleEn: ${NOTI_TEMPLATE_MAINTAIN_TITLE_EN}
+      contentVi: ${NOTI_TEMPLATE_MAINTAIN_CONTENT_VI}
+      contentEn: ${NOTI_TEMPLATE_MAINTAIN_CONTENT_EN}
