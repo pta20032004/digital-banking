@@ -16,4 +16,8 @@ public class PendingKycUserResponse {
     private String accountNumber;
     private String frontImageUrl;
     private String backImageUrl;
+    private String status;
+    private String kycStatus;
+    private java.math.BigDecimal balance;
+    private java.util.List<com.tony.demo.modules.transaction.domain.Transaction> recentTransactions;
 }

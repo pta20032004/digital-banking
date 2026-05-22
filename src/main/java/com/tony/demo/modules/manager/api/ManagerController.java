@@ -36,7 +36,7 @@ public class ManagerController {
     // 3. Tìm kiếm user theo account number
     @GetMapping("/users/{accountNumber}")
     @PreAuthorize("hasAuthority('ROLE_MANAGER') or hasAuthority('USER_VIEW')")
-    public ResponseEntity<User> getUserByAccountNumber(@PathVariable String accountNumber) {
+    public ResponseEntity<com.tony.demo.modules.manager.api.dto.PendingKycUserResponse> getUserByAccountNumber(@PathVariable String accountNumber) {
         return ResponseEntity.ok(managerService.getUserByAccountNumber(accountNumber));
     }
 

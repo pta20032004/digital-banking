@@ -50,12 +50,39 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public User getUserByAccountNumber(String accountNumber) {
+    public com.tony.demo.modules.manager.api.dto.PendingKycUserResponse getUserByAccountNumber(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         
-        return userRepository.findById(account.getUserId())
+        User user = userRepository.findById(account.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                
+        String prefix = user.getUsername() + "_";
+        java.util.List<String> files = s3Service.listFilesByPrefix(kycBucket, prefix);
+        
+        String frontKey = files.stream().filter(f -> f.endsWith("_front")).max(String::compareTo).orElse(null);
+        String backKey = files.stream().filter(f -> f.endsWith("_back")).max(String::compareTo).orElse(null);
+        
+        String frontUrl = frontKey != null ? s3Service.generatePresignedUrl(kycBucket, frontKey, java.time.Duration.ofMinutes(60)) : null;
+        String backUrl = backKey != null ? s3Service.generatePresignedUrl(kycBucket, backKey, java.time.Duration.ofMinutes(60)) : null;
+
+        java.util.List<Transaction> recentTransactions = transactionRepository.findTransactionHistory(account.getId(), org.springframework.data.domain.PageRequest.of(0, 5)).getContent();
+
+        return com.tony.demo.modules.manager.api.dto.PendingKycUserResponse.builder()
+                .username(user.getUsername())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .identityNumber(user.getIdentityNumber())
+                .dateOfBirth(user.getDateOfBirth())
+                .accountNumber(account.getAccountNumber())
+                .frontImageUrl(frontUrl)
+                .backImageUrl(backUrl)
+                .status(account.getStatus().name())
+                .kycStatus(user.getKycStatus() != null ? user.getKycStatus().name() : null)
+                .balance(account.getBalance())
+                .recentTransactions(recentTransactions)
+                .build();
     }
 
     @Override
@@ -84,6 +111,7 @@ public class ManagerServiceImpl implements ManagerService {
             
             java.util.List<Account> accounts = accountRepository.findByUserId(user.getId());
             String accountNumber = accounts.isEmpty() ? null : accounts.get(0).getAccountNumber();
+            String status = accounts.isEmpty() ? null : accounts.get(0).getStatus().name();
             
             return com.tony.demo.modules.manager.api.dto.PendingKycUserResponse.builder()
                     .username(user.getUsername())
@@ -95,6 +123,8 @@ public class ManagerServiceImpl implements ManagerService {
                     .accountNumber(accountNumber)
                     .frontImageUrl(frontUrl)
                     .backImageUrl(backUrl)
+                    .status(status)
+                    .kycStatus(user.getKycStatus() != null ? user.getKycStatus().name() : null)
                     .build();
         }).collect(java.util.stream.Collectors.toList());
     }
